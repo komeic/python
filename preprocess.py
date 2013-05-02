@@ -12,11 +12,18 @@ class preprocess:
         self.lines = fp.readlines()
         fp.close()
 
-    def writeFile(self):
-        """ write buffer into a file """
+    def overWrite(self):
+        """ overwrite buffer into a file """
         fp = open(self.name, 'w')
         for line in self.lines:
             fp.write(line)
+        fp.close()
+
+    def writeLines(self, filename, start, n):
+        """ write n lines from 'start'th line into new file """
+        fp = open(filename, 'w')
+        for i in range(n):
+            fp.write(self.lines[start+i])
         fp.close()
 
     def replaceSpace(self):
@@ -44,17 +51,39 @@ if __name__ == '__main__':
     # Caution: it will overwrite the file
     #          if want to save as other file, change arg to writeFile()
 
-    dataDir = "./data/"
+    dataDir = "../data/"
 
-    if len(sys.argv)==1:
-        for file in os.listdir(dataDir):
-            obj = preprocess(dataDir+file)
-            obj.replaceSpace()
-            obj.rmLine()
-            obj.writeFile()
-    else:
-        for file in args[1:]:
-            obj = preprocess(file)
-            obj.replaceSpace()
-            obj.rmLine()
-            obj.writeFile()
+    # if len(sys.argv)==1:
+    #     for file in os.listdir(dataDir):
+    #         obj = preprocess(dataDir+file)
+    #         obj.replaceSpace()
+    #         obj.rmLine()
+    #         obj.overWrite()
+    # else:
+
+        # 1st argument is interval
+        # 2nd is file name in directory
+
+    interval = int(args[1])
+    file = args[2]
+    obj = preprocess(dataDir+'staticexp4/'+file)
+    obj.replaceSpace()
+    obj.rmLine()
+    dataDir = dataDir + str(interval)+'s/'
+    if not os.path.exists(dataDir):
+        os.makedirs(dataDir)
+    numPoint = int(interval/0.005)
+
+    for i in range(100): # number of samples
+        newfile = file.replace('.txt', '_'+str(i)+'.txt')
+        obj.writeLines(dataDir+newfile, i*numPoint, numPoint)
+
+
+
+
+
+
+
+
+
+
